@@ -19,4 +19,5 @@ type User struct {
 	Email        string
 	PasswordHash string
 	DeletedAt    sql.NullTime
+	ApiKey       string
 }
