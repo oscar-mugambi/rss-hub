@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
-	"github.com/oscar-mugambi/rss-hub/internal/auth"
 	"github.com/oscar-mugambi/rss-hub/internal/database"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -49,21 +48,6 @@ func (apiCfg *apiConfig) handleCreateUser(w http.ResponseWriter, r *http.Request
 	respondWithJSON(w, 201, databaseUserToUser(user))
 }
 
-func (apiCfg *apiConfig) handleGetUserByApiKey(w http.ResponseWriter, r *http.Request) {
-
-	apiKey, err := auth.GetApiKey(r.Header)
-
-	if err != nil {
-		respondWithError(w, 403, fmt.Sprintf("Error getting api key: %s", err))
-		return
-	}
-
-	user, err := apiCfg.DB.GetUserByAPIKey(r.Context(), apiKey)
-	if err != nil {
-		respondWithError(w, 404, fmt.Sprintf("Error getting user: %s", err))
-		return
-	}
-
+func (apiCfg *apiConfig) handleGetUserByApiKey(w http.ResponseWriter, r *http.Request, user database.User) {
 	respondWithJSON(w, 200, databaseUserToUser(user))
-
 }
