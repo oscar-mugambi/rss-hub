@@ -18,10 +18,9 @@ CREATE TABLE feed (
 CREATE TRIGGER update_feed_updated_at
 BEFORE UPDATE ON feed
 FOR EACH ROW
-EXECUTE FUNCTION update_updated_at();
+EXECUTE FUNCTION update_updated_at('updated_at');
 
 -- +goose Down
 -- SQL section 'Down' is executed when this migration is rolled back
 DROP TRIGGER IF EXISTS update_feed_updated_at ON feed;
-DROP FUNCTION IF EXISTS update_updated_at();
 DROP TABLE IF EXISTS feed;

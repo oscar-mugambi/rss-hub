@@ -14,7 +14,7 @@ CREATE TABLE feed_follows (
 CREATE TRIGGER update_feed_follows_updated_at
 BEFORE UPDATE ON feed_follows
 FOR EACH ROW
-EXECUTE FUNCTION update_updated_at();
+EXECUTE FUNCTION update_updated_at('updated_at');
 -- +goose StatementEnd
 
 -- Create indexes for better query performance

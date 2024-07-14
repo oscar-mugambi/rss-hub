@@ -19,3 +19,10 @@ WHERE email = sqlc.arg('email');
 SELECT *
 FROM users
 WHERE api_key = sqlc.arg('api_key');
+
+
+-- name: GetAllUsers :many
+SELECT *
+FROM users;
+
+

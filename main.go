@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -20,6 +21,7 @@ type apiConfig struct {
 }
 
 func main() {
+
 	godotenv.Load(".env")
 	portString := os.Getenv("PORT")
 	dbUrl := os.Getenv("DB_URL")
@@ -37,9 +39,13 @@ func main() {
 		log.Fatal("PORT environment variable not set")
 	}
 
+	db := database.New(conn)
+
 	apiCfg := apiConfig{
-		DB: database.New(conn),
+		DB: db,
 	}
+
+	go startScraping(db, 10, time.Minute)
 
 	router := chi.NewRouter()
 
@@ -60,7 +66,11 @@ func main() {
 	v1Router.Get("/user", apiCfg.middlewareAuth(apiCfg.handleGetUserByApiKey))
 	v1Router.Post("/feed", apiCfg.middlewareAuth(apiCfg.handleCreateFeed))
 	v1Router.Get("/feeds", apiCfg.handleGetFeeds)
-
+	v1Router.Post("/feed_follows", apiCfg.middlewareAuth(apiCfg.handleCreateFeedFollow))
+	v1Router.Get("/feed_follows", apiCfg.middlewareAuth(apiCfg.handleGetFeedFollows))
+	v1Router.Delete("/feed_follows/{feed_follow_id}", apiCfg.middlewareAuth(apiCfg.handleDeleteFeedFollow))
+	v1Router.Get("/users", apiCfg.handleGetUsers)
+	v1Router.Get("/posts", apiCfg.middlewareAuth(apiCfg.handleGetPostsForUser))
 	router.Mount("/v1", v1Router)
 
 	srv := &http.Server{
